@@ -297,7 +297,20 @@ impl Element for UniformList {
                         } else if item_bottom > scroll_top + list_height - padding.bottom {
                             updated_scroll_offset.y = -(item_bottom - list_height) - padding.bottom;
                         }
-                        scroll_offset = *updated_scroll_offset;
+
+                        match scroll_strategy {
+                            ScrollStrategy::Top => {}
+                            ScrollStrategy::Center => {
+                                if item_top < scroll_top + padding.top {
+                                    updated_scroll_offset.y += list_height / 2.0;
+                                } else if item_bottom > scroll_top + list_height - padding.bottom {
+                                    updated_scroll_offset.y -= list_height / 2.0;
+                                }
+                                // TODO kb clip the scroll offset so that it's never more than the list height
+                                // TODO kb always scroll to the middle?
+                            }
+                        }
+                        scroll_offset = *updated_scroll_offset
                     }
 
                     let first_visible_element_ix =
